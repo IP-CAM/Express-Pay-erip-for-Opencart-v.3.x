@@ -55,7 +55,7 @@ class ModelExtensionPaymentEripExpressPay extends Model
         $data['ReturnUrl'] = $this->url->link('extension/payment/erip_expresspay/success');
         $data['FailUrl'] = $this->url->link('extension/payment/erip_expresspay/fail');
 
-        $data['Signature'] = $this->compute_signature_add_invoice($data, self::$model->getSecretWord(), self::$model->getToken());
+        $data['Signature'] = $this->compute_signature($data, self::$model->getSecretWord(), self::$model->getToken());
 
         $data['Action'] = self::$model->getActionUrl($config);
 
@@ -67,6 +67,13 @@ class ModelExtensionPaymentEripExpressPay extends Model
         self::$model = new EripExpressPayModel(null);
 
         return self::$model->getQrCodeUrl($config);
+    }
+
+    public function getSignatureForQr($data, $config)
+    {
+        self::$model = new EripExpressPayModel($config);
+
+        return $this->compute_signature($data, self::$model->getToken(), self::$model->getSecretWord(), 'get_qr_code');
     }
 
     public function checkResponse($signature, $request_params, $config)
@@ -106,38 +113,50 @@ class ModelExtensionPaymentEripExpressPay extends Model
         return $hash;
     }
 
-    private function compute_signature_add_invoice($request_params, $secret_word, $token)
+    private function compute_signature($request_params, $token, $secret_word, $method = 'add_invoice')
     {
         $secret_word = trim($secret_word);
         $normalized_params = array_change_key_case($request_params, CASE_LOWER);
         $api_method = array(
-            "serviceid",
-            "accountno",
-            "amount",
-            "currency",
-            "expiration",
-            "info",
-            "surname",
-            "firstname",
-            "patronymic",
-            "city",
-            "street",
-            "house",
-            "building",
-            "apartment",
-            "isnameeditable",
-            "isaddresseditable",
-            "isamounteditable",
-            "emailnotification",
-            "smsphone",
-            "returntype",
-            "returnurl",
-            "failurl"
+            'add_invoice' => array(
+                "serviceid",
+                "accountno",
+                "amount",
+                "currency",
+                "expiration",
+                "info",
+                "surname",
+                "firstname",
+                "patronymic",
+                "city",
+                "street",
+                "house",
+                "building",
+                "apartment",
+                "isnameeditable",
+                "isaddresseditable",
+                "isamounteditable",
+                "emailnotification",
+                "smsphone",
+                "returntype",
+                "returnurl",
+                "failurl"
+            ),
+            'get_qr_code' => array(
+                "invoiceid",
+                "viewtype",
+                "imagewidth",
+                "imageheight"
+            ),
+            'add_invoice_return' => array(
+                "accountno",
+                "invoiceno"
+            )
         );
 
         $result = $token;
 
-        foreach ($api_method as $item)
+        foreach ($api_method[$method] as $item)
             $result .= (isset($normalized_params[$item])) ? $normalized_params[$item] : '';
 
         $hash = strtoupper(hash_hmac('sha1', $result, $secret_word));

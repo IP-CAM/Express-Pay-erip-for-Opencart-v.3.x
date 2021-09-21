@@ -107,11 +107,11 @@ class ControllerExtensionPaymentEripExpressPay extends Controller
                 'ViewType' => 'base64'
             );
 
-            $request_params["Signature"] = $this->model_extension_payment_epos_expresspay->getSignatureForQr($request_params, $this->config);
+            $request_params["Signature"] = $this->model_extension_payment_erip_expresspay->getSignatureForQr($request_params, $this->config);
 
             $request_params = http_build_query($request_params);
     
-            $url = $this->model_extension_payment_epos_expresspay->getQrCodeLink($this->config) . '?' . $request_params;
+            $url = $this->model_extension_payment_erip_expresspay->getQrCodeLink($this->config) . '?' . $request_params;
 
             $this->log_info('Success', 'URL: ' . $url);
             try {
