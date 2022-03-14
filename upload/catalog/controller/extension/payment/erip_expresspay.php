@@ -44,17 +44,15 @@ class ControllerExtensionPaymentEripExpressPay extends Controller{
         $this->document->setTitle($headingTitle);
         $data['heading_title'] = $headingTitle;
 
-        if (empty($this->config->get(self::MESSAGE_SUCCESS_PARAM_NAME))) {
-            $data['text_message'] = $this->language->get('text_message_success');
-        } else {
-            $data['text_message'] = $this->config->get(self::MESSAGE_SUCCESS_PARAM_NAME);
+        $textMessage = $this->config->get(self::MESSAGE_SUCCESS_PARAM_NAME);
+        if (empty($textMessage)) {
+            $textMessage = $this->language->get('text_message_success');
         }
-        $data['text_message'] = nl2br(str_replace('##order_id##', $this->session->data['order_id'], $data['text_message']));
+        $data['text_message'] = nl2br(str_replace('##order_id##', $this->session->data['order_id'], $textMessage));
 
-        if (empty($this->config->get(self::PATH_IN_ERIP_PARAM_NAME))) {
+        $eripPath = $this->config->get(self::PATH_IN_ERIP_PARAM_NAME);
+        if (empty($eripPath)) {
             $eripPath = $this->language->get('erip_path');
-        } else {
-            $eripPath = $this->config->get(self::PATH_IN_ERIP_PARAM_NAME);
         }
         $data['content_body'] = str_replace('##erip_path##', $eripPath, $this->language->get('content_success'));
         $data['content_body'] = nl2br(str_replace('##order_id##', $this->session->data['order_id'], $data['content_body']));
