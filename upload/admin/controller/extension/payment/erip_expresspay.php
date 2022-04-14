@@ -8,6 +8,7 @@
 
 class ControllerExtensionPaymentEripExpresspay extends Controller
 {
+  const VERSION_EXTENSION                         = '1.0.1';
   const NAME_PAYMENT_METHOD                       = 'payment_erip_expresspay_name_payment_method';
   const TOKEN_PARAM_NAME                          = 'payment_erip_expresspay_token';
   const SERVICE_ID_PARAM_NAME                     = 'payment_erip_expresspay_service_id';
@@ -68,6 +69,7 @@ class ControllerExtensionPaymentEripExpresspay extends Controller
 
     $data['order_statuses'] = $this->model_localisation_order_status->getOrderStatuses();
     $data['user_token'] = $this->session->data['user_token'];
+    $data['version_extension'] = self::VERSION_EXTENSION;
 
     $data = $this->setBreadcrumbs($data);
     $data = $this->setButtons($data);

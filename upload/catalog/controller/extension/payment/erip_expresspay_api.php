@@ -69,7 +69,6 @@ class ControllerExtensionPaymentEripExpressPayApi extends Controller{
 
             switch ($cmdtype) {
                 case 1:
-                    $this->model_checkout_order->addOrderHistory($accountNo, $this->config->get(self::PROCESSED_STATUS_ID_PARAM_NAME));
                     header("HTTP/1.1 200 OK");
                     echo 'OK | the notice is processed';
                     $this->model_extension_payment_erip_expresspay_log->log_info("notify_success", "the notice is processed");
@@ -84,7 +83,9 @@ class ControllerExtensionPaymentEripExpressPayApi extends Controller{
                     if(isset($status)){
                         switch($status){
                             case 1: // Ожидает оплату
-                                $this->model_checkout_order->addOrderHistory($accountNo, $this->config->get(self::PROCESSED_STATUS_ID_PARAM_NAME));
+                                if($this->model_checkout_order->getOrder($accountNo)['order_status_id'] != $this->config->get(self::SUCCESS_STATUS_ID_PARAM_NAME)){
+                                    $this->model_checkout_order->addOrderHistory($accountNo, $this->config->get(self::PROCESSED_STATUS_ID_PARAM_NAME));
+                                }
                                 break;
                             case 2: // Просрочен
                                 $this->model_checkout_order->addOrderHistory($accountNo, $this->config->get(self::FAIL_STATUS_ID_PARAM_NAME));
@@ -94,7 +95,6 @@ class ControllerExtensionPaymentEripExpressPayApi extends Controller{
                                 $this->model_checkout_order->addOrderHistory($accountNo, $this->config->get(self::SUCCESS_STATUS_ID_PARAM_NAME));
                                 break;
                             case 4: // Оплачен частично
-                                //$this->model_checkout_order->addOrderHistory($accountNo, $this->config->get(self::FAIL_STATUS_ID_PARAM_NAME));
                                 break;
                             case 5: // Отменен
                                 $this->model_checkout_order->addOrderHistory($accountNo, $this->config->get(self::FAIL_STATUS_ID_PARAM_NAME));
