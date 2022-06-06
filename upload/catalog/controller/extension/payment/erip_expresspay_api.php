@@ -92,7 +92,9 @@ class ControllerExtensionPaymentEripExpressPayApi extends Controller{
                                 break;
                             case 3: // Оплачен
                             case 6: // Оплачен с помощью банковской карты
-                                $this->model_checkout_order->addOrderHistory($accountNo, $this->config->get(self::SUCCESS_STATUS_ID_PARAM_NAME));
+                                if($this->model_checkout_order->getOrder($accountNo)['order_status_id'] != $this->config->get(self::SUCCESS_STATUS_ID_PARAM_NAME)){
+                                    $this->model_checkout_order->addOrderHistory($accountNo, $this->config->get(self::SUCCESS_STATUS_ID_PARAM_NAME));
+                                }
                                 break;
                             case 4: // Оплачен частично
                                 break;
